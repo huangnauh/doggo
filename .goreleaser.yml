@@ -19,37 +19,24 @@ builds:
     dir: ./cmd/doggo/
 
 archives:
-  - format: tar.gz
-    files:
-      - README.md
-      - LICENSE
-
-snapcrafts:
-  - name_template: "{{ .ProjectName }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
-    summary: Command-line DNS client.
-    description: |
-      doggo is a command-line DNS client written in Go. It supports protocols like DoH, DoT and output formats like JSON.
-    grade: stable
-    confinement: strict
-    publish: true
-
-dockers:
-- image_templates:
-  - "ghcr.io/mr-karan/doggo:{{ .Tag }}"
-  - "ghcr.io/mr-karan/doggo:latest"
-  binaries:
-  - doggo
-  dockerfile: Dockerfile
-  build_flag_templates:
-  - "--build-arg"
-  - "ARCH=amd64"
-- image_templates:
-  - "ghcr.io/mr-karan/doggo:{{ .Tag }}-arm64v8"
-  - "ghcr.io/mr-karan/doggo:latest-arm64v8"
-  binaries:
-  - doggo
-  goarch: arm64
-  dockerfile: Dockerfile
-  build_flag_templates:
-  - "--build-arg"
-  - "ARCH=arm64v8"
+  - id: default
+    builds:
+      - doggo
+    format_overrides:
+      - goos: windows
+        format: zip
+    replacements:
+      windows: Windows
+      darwin: Darwin
+      386: i386
+      amd64: x86_64
+checksum:
+  name_template: "checksums.txt"
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"

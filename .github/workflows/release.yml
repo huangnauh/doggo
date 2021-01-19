@@ -20,23 +20,10 @@ jobs:
         with:
           go-version: 1.15
       -
-        name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GH_GORELEASER_TOKEN }}
-      - 
-        name: Install Snapcraft and Log In
-        uses: samuelmeuli/action-snapcraft@v1
-        with:
-          snapcraft_token: ${{ secrets.SNAPCRAFT_TOKEN }}
-      -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
           version: latest
-          args: release --rm-dist
+          args: release --snapshot --skip-publish --skip-sign --rm-dist
         env:
-          DOCKER_CLI_EXPERIMENTAL: enabled
-          GITHUB_TOKEN: ${{ secrets.GH_GORELEASER_TOKEN }}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
