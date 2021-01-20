@@ -3,6 +3,8 @@
 package config
 
 import (
+	"net"
+
 	"github.com/miekg/dns"
 )
 
@@ -15,5 +17,13 @@ func GetDefaultServers() ([]string, int, []string, error) {
 	if err != nil {
 		return nil, 0, nil, err
 	}
-	return cfg.Servers, cfg.Ndots, cfg.Search, nil
+	servers := make([]string, 0)
+	for _, server := range cfg.Servers {
+		ip := net.ParseIP(server)
+		if isUnicastLinkLocal(ip) {
+			continue
+		}
+		servers = append(servers, server)
+	}
+	return servers, cfg.Ndots, cfg.Search, nil
 }
